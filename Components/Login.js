@@ -1,8 +1,9 @@
 
 import React, { useState } from "react";
-import { StyleSheet, Alert, Text, View, Image, TextInput, Button, TouchableOpacity } from "react-native";
+import { StyleSheet, Alert, Text, View, Image, TextInput, TouchableOpacity } from "react-native";
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 import { initializeApp } from 'firebase/app';
+import { signIn, store } from './SigninReducer';
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -30,10 +31,14 @@ export default function Login() {
                 let response = await signInWithEmailAndPassword(auth, email, password);
                 if (response) {
                     console.log(response)
+                    store.dispatch(signIn(true))
+                } else {
+                    store.dispatch(signIn(false))
+                    Alert.alert('Wrong Email or Password');
                 }
             }
-        } catch (error) {
-            Alert.alert("Invalid Email or Password");
+        } catch (err) {
+            console.error(err);
         }
     };
 
