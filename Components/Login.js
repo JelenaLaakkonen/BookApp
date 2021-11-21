@@ -39,6 +39,11 @@ export default function Login() {
 
     return (
         <View style={styles.container}>
+            <Image
+                style={styles.image}
+                source={require('../assets/logo.png')}
+            />
+            <Text style={styles.title}>Welcome to Book Owl</Text>
             <View style={styles.inputView}>
                 <TextInput
                     style={styles.TextInput}
@@ -108,7 +113,7 @@ const styles = StyleSheet.create({
         borderRadius: 25,
         alignItems: "center",
         justifyContent: "center",
-        marginTop: -100,
+        marginTop: -20,
         marginBottom: 5,
         backgroundColor: "transparent",
     },
