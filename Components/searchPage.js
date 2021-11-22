@@ -1,7 +1,10 @@
+import { NavigationContainer } from '@react-navigation/native';
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, TextInput, Button, FlatList, Image } from 'react-native';
+import { StyleSheet, Text, View, TextInput, Button, FlatList, Image, TouchableNativeFeedback } from 'react-native';
+import { LongPressGestureHandler } from 'react-native-gesture-handler';
+import Bookshelf from './Bookshelf';
 
-export default function searchPage() {
+export default function searchPage( {navigation} ) {
 
   const [input, setInput] = useState('');
   const [books, setBooks] = useState([]);
@@ -17,9 +20,13 @@ export default function searchPage() {
       });
   }
 
+  const pressed = () => {
+    console.log('hi');
+  } 
+
   const renderItem = ({ item }) => (
     <View style={styles.bookContainer}>
-      <View >
+      <View>
         <Image
           style={styles.bookImage}
           source={{ uri: item.volumeInfo.imageLinks.smallThumbnail }}
@@ -27,7 +34,9 @@ export default function searchPage() {
         />
       </View>
       <View>
-        <Text style={styles.title}>{item.volumeInfo.title}</Text>
+        <TouchableNativeFeedback style={{ flex: 0.5, borderColor: "black", borderWidth: 1 }} onPress={() => navigation.navigate('BookDetails')}>
+            <Text style={styles.title}>{item.volumeInfo.title}</Text>
+        </TouchableNativeFeedback>
         <Text style={styles.author}>by {item.volumeInfo.authors}</Text>
       </View>
     </View >

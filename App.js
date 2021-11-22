@@ -6,7 +6,9 @@ import { MaterialCommunityIcons, AntDesign, Entypo } from '@expo/vector-icons';
 import searchPage from './Components/searchPage';
 import Login from './Components/Login';
 import Bookshelf from './Components/Bookshelf';
+import BookDetails from './Components/BookDetails';
 import { signIn, store } from './Components/SigninReducer';
+import { SearchBar } from "react-native-screens";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -23,7 +25,33 @@ const AuthStack = () => {
   );
 };
 
-const HomeTabs = () => {
+const MainStackNavigator = () => {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name="Search" component={searchPage} />
+      <Stack.Screen name="BookDetails" component={BookDetails} />
+    </Stack.Navigator>
+  );
+}
+
+const BookShelfStackNavigator = () => {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name="Bookshelf" component={Bookshelf} />
+    </Stack.Navigator>
+  );
+}
+
+const BottomTabNavigator = () => {
+  return (
+    <Tab.Navigator screenOptions={{ headerShown: false }}>
+      <Tab.Screen name="Search" component={MainStackNavigator} />
+      <Tab.Screen name="Bookshelf" component={BookShelfStackNavigator} />
+    </Tab.Navigator>
+  );
+};
+
+/*const HomeTabs = () => {
   return (
     <Tab.Navigator>
       <Tab.Screen
@@ -64,7 +92,7 @@ const HomeTabs = () => {
       />
     </Tab.Navigator>
   );
-};
+}; */
 
 export default function App() {
   const [isSigned, setIsSigned] = useState(true);
@@ -77,7 +105,7 @@ export default function App() {
   return (
     // Check if 'isSigned' is true and change the path from 'Login' to 'Search' if true    
     <NavigationContainer>
-      {isSigned ? <HomeTabs /> : <AuthStack />}
+      {isSigned ? <BottomTabNavigator /> : <AuthStack />}
     </NavigationContainer>
   );
 }
