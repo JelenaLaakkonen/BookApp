@@ -11,7 +11,7 @@ export function signIn(value) {
 //Reducer
 export function changeSignInValue(state, action) {
     if (state == undefined) {
-        state == false
+        state = false
     }
     if (action.type == 'signIn') {
         return action.valueOfState

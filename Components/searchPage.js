@@ -3,44 +3,65 @@ import { StyleSheet, Text, View, TextInput, Button, FlatList, Image } from 'reac
 
 export default function searchPage() {
 
-const [input, setInput] = useState('');
-const [books, setBooks] = useState([]);
+  const [input, setInput] = useState('');
+  const [books, setBooks] = useState([]);
 
-const getBooks = (input) => {
-  fetch(`https://www.googleapis.com/books/v1/volumes?q=${input}`)
-  .then(response => response.json())
-  .then(data => { 
-    setBooks(data.items);
-  })
-  .catch((error) => {
-    Alert.alert('Error',  error);
-   });
+  const getBooks = (input) => {
+    fetch(`https://www.googleapis.com/books/v1/volumes?q=${input}`)
+      .then(response => response.json())
+      .then(data => {
+        setBooks(data.items);
+      })
+      .catch((err) => {
+        console.error('Error', err);
+      });
   }
 
   const renderItem = ({ item }) => (
-    <View>
-      <Text>{item.volumeInfo.title}</Text>
-    </View>
+    <View style={styles.bookContainer}>
+      <View >
+        <Image
+          style={styles.bookImage}
+          source={{ uri: item.volumeInfo.imageLinks.smallThumbnail }}
+          resizeMode='contain'
+        />
+      </View>
+      <View>
+        <Text style={styles.title}>{item.volumeInfo.title}</Text>
+        <Text style={styles.author}>by {item.volumeInfo.authors}</Text>
+      </View>
+    </View >
+  )
+
+  const renderSeparator = () => (
+    <View
+      style={{
+        backgroundColor: 'lightgrey',
+        height: 0.5,
+      }}
+    />
   )
 
   return (
     <View style={styles.container}>
-        <FlatList 
-          style={{marginLeft: "5%"}}
-          keyExtractor={item => item.id}
-          renderItem={renderItem} 
-          data={books}
-        />
-        <TextInput
-          style={{fontSize: 18, width:200, borderWidth: 1}}
-          value={input}
-          placeholder="Type search word" 
-          onChangeText={input => setInput(input)}
-        />
-        <Button 
-          title="Find" 
-          onPress={() => getBooks(input)} 
-        />
+      <FlatList
+        ItemSeparatorComponent={renderSeparator}
+        style={{ marginLeft: "5%" }}
+        keyExtractor={item => item.id}
+        renderItem={renderItem}
+        data={books}
+      />
+      <TextInput
+        style={{ fontSize: 18, width: 200, borderWidth: 1 }}
+        value={input}
+        placeholder="Type search word"
+        onChangeText={input => setInput(input)}
+      />
+      <Button
+        style={styles.button}
+        title="Find"
+        onPress={() => getBooks(input)}
+      />
     </View>
   );
 }
@@ -51,7 +72,29 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: 10,
-    margin: 12,
   },
+  title: {
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    fontWeight: 'bold',
+    fontSize: 20
+  },
+  author: {
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingLeft: 10,
+    marginBottom: 10
+  },
+  button: {
+    margin: 10,
+    padding: 10
+  },
+  bookImage: {
+    height: 100,
+    width: 100
+  },
+  bookContainer: {
+    flexDirection: 'row',
+    padding: 10
+  }
 });

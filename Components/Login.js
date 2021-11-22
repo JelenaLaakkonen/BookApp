@@ -45,7 +45,7 @@ export default function Login() {
     return (
         <View style={styles.container}>
             <Image
-                style={styles.image}
+                style={styles.loginImage}
                 source={require('../assets/logo.png')}
             />
             <Text style={styles.title}>Welcome to Book Owl</Text>
@@ -112,7 +112,7 @@ const styles = StyleSheet.create({
         marginTop: 40,
         backgroundColor: "rgb(116, 144, 147)",
     },
-    image: {
+    loginImage: {
         width: "45%",
         height: "35%",
         borderRadius: 25,
