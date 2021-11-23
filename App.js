@@ -8,7 +8,6 @@ import Login from './Components/Login';
 import Bookshelf from './Components/Bookshelf';
 import BookDetails from './Components/BookDetails';
 import { signIn, store } from './Components/SigninReducer';
-import { SearchBar } from "react-native-screens";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -28,7 +27,20 @@ const AuthStack = () => {
 const MainStackNavigator = () => {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="Search" component={searchPage} />
+      <Stack.Screen
+        name="Search"
+        component={searchPage}
+        options={{
+          headerRight: () => (
+            <AntDesign.Button
+              onPress={() => store.dispatch(signIn(false))}
+              color="black"
+              backgroundColor="rgb(116, 144, 147)"
+              name="logout"
+              size={28}
+            />
+          ),
+        }} />
       <Stack.Screen name="BookDetails" component={BookDetails} />
     </Stack.Navigator>
   );
@@ -37,7 +49,20 @@ const MainStackNavigator = () => {
 const BookShelfStackNavigator = () => {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="Bookshelf" component={Bookshelf} />
+      <Stack.Screen
+        name="Bookshelf"
+        component={Bookshelf}
+        options={{
+          headerRight: () => (
+            <AntDesign.Button
+              onPress={() => store.dispatch(signIn(false))}
+              color="black"
+              backgroundColor="rgb(116, 144, 147)"
+              name="logout"
+              size={28}
+            />
+          ),
+        }} />
     </Stack.Navigator>
   );
 }
@@ -45,54 +70,27 @@ const BookShelfStackNavigator = () => {
 const BottomTabNavigator = () => {
   return (
     <Tab.Navigator screenOptions={{ headerShown: false }}>
-      <Tab.Screen name="Search" component={MainStackNavigator} />
-      <Tab.Screen name="Bookshelf" component={BookShelfStackNavigator} />
-    </Tab.Navigator>
-  );
-};
-
-/*const HomeTabs = () => {
-  return (
-    <Tab.Navigator>
-      <Tab.Screen
-        name="Search"
-        component={searchPage}
+      <Tab.Screen 
+        name="SearchTab" 
+        component={MainStackNavigator}
         options={{
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons name="book-search-outline" color={color} size={size} />
           ),
-          headerRight: () => (
-            <AntDesign.Button
-              onPress={() => store.dispatch(signIn(false))}
-              color="black"
-              backgroundColor="rgb(116, 144, 147)"
-              name="logout"
-              size={28}
-            />
-          ),
         }}
       />
-      <Tab.Screen
-        name="Bookshelf"
-        component={Bookshelf}
+      <Tab.Screen 
+        name="BookshelfTab"
+        component={BookShelfStackNavigator}
         options={{
           tabBarIcon: ({ color, size }) => (
             <Entypo name="open-book" color={color} size={size} />
-          ),
-          headerRight: () => (
-            <AntDesign.Button
-              onPress={() => store.dispatch(signIn(false))}
-              color="black"
-              backgroundColor="rgb(116, 144, 147)"
-              name="logout"
-              size={28}
-            />
-          ),
+          )
         }}
       />
     </Tab.Navigator>
   );
-}; */
+};
 
 export default function App() {
   const [isSigned, setIsSigned] = useState(true);
