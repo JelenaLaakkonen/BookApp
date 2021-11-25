@@ -7,7 +7,7 @@ export default function searchPage( {navigation} ) {
   const [books, setBooks] = useState([]);
 
   const getBooks = (input) => {
-    fetch(`https://www.googleapis.com/books/v1/volumes?q=${input}`)
+    fetch(`https://www.googleapis.com/books/v1/volumes?q=${input}&key=AIzaSyAC_om6HN224gaJSHas_OVPDpuJEXwQj2U`)
       .then(response => response.json())
       .then(data => {
         setBooks(data.items);
