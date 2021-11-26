@@ -1,16 +1,19 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, TextInput, Button, FlatList, Image, TouchableNativeFeedback } from 'react-native';
+import { Text, View, TextInput, Button, FlatList, Image, TouchableNativeFeedback } from 'react-native';
+import styles from './Styles';
 
-export default function searchPage( {navigation} ) {
+export default function searchPage({ navigation }) {
 
   const [input, setInput] = useState('');
   const [books, setBooks] = useState([]);
+  const [resultAmount, setResultAmount] = useState();
 
   const getBooks = (input) => {
     fetch(`https://www.googleapis.com/books/v1/volumes?q=${input}&key=AIzaSyAC_om6HN224gaJSHas_OVPDpuJEXwQj2U`)
       .then(response => response.json())
       .then(data => {
         setBooks(data.items);
+        setResultAmount(data.totalItems);
       })
       .catch((err) => {
         console.error('Error', err);
@@ -27,8 +30,8 @@ export default function searchPage( {navigation} ) {
         />
       </View>
       <View>
-        <TouchableNativeFeedback style={{ flex: 0.5, borderColor: "black", borderWidth: 1 }} onPress={() => navigation.navigate('BookDetails', {link: item.selfLink})}>
-            <Text style={styles.title}>{item.volumeInfo.title}</Text>
+        <TouchableNativeFeedback onPress={() => navigation.navigate('BookDetails', { link: item.selfLink })}>
+          <Text style={styles.title}>{item.volumeInfo.title}</Text>
         </TouchableNativeFeedback>
         <Text style={styles.author}>by {item.volumeInfo.authors}</Text>
       </View>
@@ -44,14 +47,35 @@ export default function searchPage( {navigation} ) {
     />
   )
 
+  const renderEmptyContainer = () => (
+    <View style={styles.container}>
+      <Text style={styles.title}>Search and find new worlds</Text>
+      <Image
+        style={{
+          width: 250,
+          height: 200,
+        }}
+        source={require('../assets/searchImage.png')}
+      />
+    </View>
+  )
+
+  const renderListHeader = () => (
+    <View>
+      <Text>{resultAmount} results for "{input}"</Text>
+    </View>
+  )
+
   return (
     <View style={styles.container}>
       <FlatList
+        ListHeaderComponent={renderListHeader}
         ItemSeparatorComponent={renderSeparator}
         style={{ marginLeft: "5%" }}
         keyExtractor={item => item.id}
         renderItem={renderItem}
         data={books}
+        ListEmptyComponent={renderEmptyContainer()}
       />
       <TextInput
         style={{ fontSize: 18, width: 200, borderWidth: 1 }}
@@ -67,36 +91,3 @@ export default function searchPage( {navigation} ) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  title: {
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    fontWeight: 'bold',
-    fontSize: 20
-  },
-  author: {
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingLeft: 10,
-    marginBottom: 10
-  },
-  button: {
-    margin: 10,
-    padding: 10
-  },
-  bookImage: {
-    height: 100,
-    width: 100
-  },
-  bookContainer: {
-    flexDirection: 'row',
-    padding: 10
-  }
-});
