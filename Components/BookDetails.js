@@ -34,28 +34,29 @@ export default function BookDetails({ route, navigation }) {
 
         <View style={styles2.container}>
             <ScrollView showsVerticalScrollIndicator={false}>
-                <ImageBackground source={{ uri: imageLink.small }} style={styles2.imageContainer} blurRadius={10}>
+                <ImageBackground source={{ uri: imageLink.smallThumbnail }} style={styles2.imageContainer} blurRadius={10}>
                     <Image
                         style={styles2.bookImage}
-                        source={{ uri: imageLink.small }}
+                        source={{ uri: imageLink.smallThumbnail }}
                         resizeMode='contain'
                     />
                 </ImageBackground>
                 <View style={styles2.container}>
                     <Text style={styles2.title}>{bookDetails.title}</Text>
                     <Text style={styles2.author}>by {bookDetails.authors}</Text>
-                    
+                    <Text style={styles2.header}>Book description</Text>
                     <Text
                         onTextLayout={onTextLayout}
                         numberOfLines={textShown ? undefined : 4}
-                        style={{ lineHeight: 21, fontFamily: 'serif' }}>{bookDetails.description}</Text>
+                        style={styles2.description}>{bookDetails.description}</Text>
                     {
                         lengthMore ? <Text
                             onPress={toggleNumberOfLines}
-                            style={{ lineHeight: 21, marginTop: 10, fontFamily: 'serif' }}>{textShown ? 'Read less...' : 'Read more...'}</Text>
+                            style={styles.descriptionMore}>{textShown ? 'Read less...' : 'Read more...'}</Text>
                             : null
                     }
                 </View>
+                <Text style={styles2.additionalInfo}>- {bookDetails.pageCount} pages - First published {bookDetails.publishedDate} - Publisher {bookDetails.publisher}</Text>
             </ScrollView>
         </View >
 
@@ -83,16 +84,47 @@ const styles2 = StyleSheet.create({
         fontSize: 20,
         marginRight: -10,
     },
+    additionalInfo: {
+        fontFamily: 'serif',
+        marginTop: 10,
+        marginBottom: 5,
+        textAlign: 'center',
+        borderBottomColor: 'lightgrey',
+        borderBottomWidth: 1,
+        borderTopColor: 'lightgrey',
+        borderTopWidth: 1,
+        paddingVertical: 15,
+        paddingHorizontal: 30
+    },
+    header: {
+        fontFamily: 'serif',
+        marginTop: 10,
+        marginBottom: 5,
+        fontSize: 20,
+        marginRight: -10,
+        borderBottomColor: 'lightgrey',
+        borderBottomWidth: 2,
+    },
     author: {
         fontFamily: 'serif',
         alignItems: 'center',
         paddingLeft: 10,
         marginBottom: 10,
+        borderBottomColor: 'lightgrey',
+        borderBottomWidth: 1,
     },
     description: {
         fontFamily: 'serif',
         alignItems: 'center',
         paddingHorizontal: 30,
+        lineHeight: 21
+    },
+    descriptionMore: {
+        fontFamily: 'serif',
+        alignItems: 'center',
+        paddingHorizontal: 30,
+        lineHeight: 21,
+        marginTop: 10
     },
     bookImage: {
         flex: 1,

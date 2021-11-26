@@ -6,14 +6,15 @@ export default function searchPage({ navigation }) {
 
   const [input, setInput] = useState('');
   const [books, setBooks] = useState([]);
-  const [resultAmount, setResultAmount] = useState();
+  const [resultAmount, setResultAmount] = useState('');
 
   const getBooks = (input) => {
-    fetch(`https://www.googleapis.com/books/v1/volumes?q=${input}&key=AIzaSyAC_om6HN224gaJSHas_OVPDpuJEXwQj2U`)
+    fetch(`https://www.googleapis.com/books/v1/volumes?q=${input}&maxResults=40&key=AIzaSyAC_om6HN224gaJSHas_OVPDpuJEXwQj2U`)
       .then(response => response.json())
       .then(data => {
         setBooks(data.items);
-        setResultAmount(data.totalItems);
+        const numToString = data.totalItems.toString();
+        setResultAmount(numToString + ' results for "' + input +'"');
       })
       .catch((err) => {
         console.error('Error', err);
@@ -23,17 +24,26 @@ export default function searchPage({ navigation }) {
   const renderItem = ({ item }) => (
     <View style={styles.bookContainer}>
       <View>
-        <Image
-          style={styles.bookImage}
-          source={{ uri: item.volumeInfo.imageLinks.smallThumbnail }}
-          resizeMode='contain'
-        />
+        <TouchableNativeFeedback onPress={() => navigation.navigate('BookDetails', { link: item.selfLink })}>
+          <Image
+            style={styles.bookImage}
+            source={{ uri: item.volumeInfo.imageLinks.smallThumbnail }}
+            resizeMode='contain'
+          />
+        </TouchableNativeFeedback>
       </View>
       <View>
         <TouchableNativeFeedback onPress={() => navigation.navigate('BookDetails', { link: item.selfLink })}>
           <Text style={styles.title}>{item.volumeInfo.title}</Text>
         </TouchableNativeFeedback>
         <Text style={styles.author}>by {item.volumeInfo.authors}</Text>
+        <View style={styles.button}>
+          <Button
+            color='rgb(116, 144, 147)'
+            onPress={() => console.log('huuhaa')}
+            title='add book to shelf'>
+          </Button>
+        </View>
       </View>
     </View >
   )
@@ -62,7 +72,7 @@ export default function searchPage({ navigation }) {
 
   const renderListHeader = () => (
     <View>
-      <Text>{resultAmount} results for "{input}"</Text>
+      <Text>{resultAmount}</Text>
     </View>
   )
 

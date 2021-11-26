@@ -20,8 +20,8 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   button: {
-    margin: 10,
-    padding: 10
+    width: 190,
+    paddingTop: 35
   },
   bookImage: {
     height: 120,
