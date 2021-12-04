@@ -4,23 +4,13 @@ import { StyleSheet, Alert, Text, View, Image, TextInput, TouchableOpacity } fro
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 import { initializeApp } from 'firebase/app';
 import { signIn, store } from './SigninReducer';
-
-// Your web app's Firebase configuration
-const firebaseConfig = {
-    apiKey: "AIzaSyAC_om6HN224gaJSHas_OVPDpuJEXwQj2U",
-    authDomain: "authentication-2850e.firebaseapp.com",
-    databaseURL: "https://authentication-2850e-default-rtdb.firebaseio.com/",
-    projectId: "authentication-2850e",
-    storageBucket: "authentication-2850e.appspot.com",
-    messagingSenderId: "381706680742",
-    appId: "1:381706680742:web:2f037a8a1ebf73d9a93767"
-};
+import firebaseConfig from './firebaseConfig';
 
 // Initialize Firebase
 initializeApp(firebaseConfig);
 const auth = getAuth();
 
-export default function Login() {
+export default function Login({ navigation }) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
@@ -59,15 +49,15 @@ export default function Login() {
             </View>
             <View style={styles.inputView}>
                 <TextInput
-                    style={styles.TextInput}
+                    style={styles.textInput}
                     placeholder="Password"
                     placeholderTextColor="#003f5c"
                     secureTextEntry={true}
                     onChangeText={(password) => setPassword(password)}
                 />
             </View>
-            <TouchableOpacity>
-                <Text style={styles.forgot_button}>Forgot Password?</Text>
+            <TouchableOpacity style={styles.registerBtn} onPress={() => navigation.navigate('Register')}>
+                <Text>Register here</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.loginBtn} onPress={onLogin}>
                 <Text>LOGIN</Text>
@@ -83,10 +73,28 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "center",
     },
+    registerBtn: {
+        width: "40%",
+        borderRadius: 25,
+        height: 50,
+        alignItems: "center",
+        justifyContent: "center",
+        marginTop: 20,
+        backgroundColor: "transparent",
+    },
     title: {
         fontFamily: 'serif',
         fontSize: 20,
         marginBottom: 30,
+    },
+    loginBtn: {
+        width: "40%",
+        borderRadius: 25,
+        height: 50,
+        alignItems: "center",
+        justifyContent: "center",
+        marginTop: 40,
+        backgroundColor: "rgb(116, 144, 147)",
     },
     inputView: {
         backgroundColor: "#fff",
@@ -98,19 +106,10 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: 'black',
     },
-    TextInput: {
+    textInput: {
         height: 50,
         flex: 1,
         padding: 10,
-    },
-    loginBtn: {
-        width: "40%",
-        borderRadius: 25,
-        height: 50,
-        alignItems: "center",
-        justifyContent: "center",
-        marginTop: 40,
-        backgroundColor: "rgb(116, 144, 147)",
     },
     loginImage: {
         width: "45%",

@@ -6,6 +6,7 @@ export default function searchPage({ navigation }) {
 
   const [input, setInput] = useState('');
   const [books, setBooks] = useState([]);
+  const [bookDetails, setBookDetails] = useState({});
   const [resultAmount, setResultAmount] = useState('');
 
   const getBooks = (input) => {
@@ -14,12 +15,12 @@ export default function searchPage({ navigation }) {
       .then(data => {
         setBooks(data.items);
         const numToString = data.totalItems.toString();
-        setResultAmount(numToString + ' results for "' + input +'"');
+        setResultAmount(numToString + ' results for "' + input + '"');
       })
       .catch((err) => {
         console.error('Error', err);
       });
-  }
+  };
 
   const renderItem = ({ item }) => (
     <View style={styles.bookContainer}>
@@ -37,13 +38,6 @@ export default function searchPage({ navigation }) {
           <Text style={styles.title}>{item.volumeInfo.title}</Text>
         </TouchableNativeFeedback>
         <Text style={styles.author}>by {item.volumeInfo.authors}</Text>
-        <View style={styles.button}>
-          <Button
-            color='rgb(116, 144, 147)'
-            onPress={() => console.log('huuhaa')}
-            title='add book to shelf'>
-          </Button>
-        </View>
       </View>
     </View >
   )
@@ -59,7 +53,7 @@ export default function searchPage({ navigation }) {
 
   const renderEmptyContainer = () => (
     <View style={styles.container}>
-      <Text style={styles.title}>Search and find new worlds</Text>
+      <Text style={styles.title}>Search for books</Text>
       <Image
         style={{
           width: 250,
@@ -87,17 +81,21 @@ export default function searchPage({ navigation }) {
         data={books}
         ListEmptyComponent={renderEmptyContainer()}
       />
-      <TextInput
-        style={{ fontSize: 18, width: 200, borderWidth: 1 }}
-        value={input}
-        placeholder="Type search word"
-        onChangeText={input => setInput(input)}
-      />
-      <Button
-        style={styles.button}
-        title="Find"
-        onPress={() => getBooks(input)}
-      />
+      <View style={styles.inputView}>
+        <TextInput
+          style={styles.textInput}
+          value={input}
+          placeholder="Type search word"
+          onChangeText={input => setInput(input)}
+        />
+      </View>
+      <View style={styles.button}>
+        <Button
+          onPress={() => getBooks(input)}
+          color="rgb(116, 144, 147)"
+          title="Find"
+        />
+      </View>
     </View>
   );
 }

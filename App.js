@@ -5,9 +5,11 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { MaterialCommunityIcons, AntDesign, Entypo } from '@expo/vector-icons';
 import searchPage from './Components/searchPage';
 import Login from './Components/Login';
+import Register from './Components/Register';
 import Bookshelf from './Components/Bookshelf';
 import BookDetails from './Components/BookDetails';
 import { signIn, store } from './Components/SigninReducer';
+import test from './Components/test'
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -19,6 +21,10 @@ const AuthStack = () => {
         name="Login"
         component={Login}
         options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="Register"
+        component={Register}
       />
     </Stack.Navigator>
   );
@@ -70,8 +76,8 @@ const BookShelfStackNavigator = () => {
 const BottomTabNavigator = () => {
   return (
     <Tab.Navigator screenOptions={{ headerShown: false }}>
-      <Tab.Screen 
-        name="SearchTab" 
+      <Tab.Screen
+        name="SearchTab"
         component={MainStackNavigator}
         options={{
           tabBarIcon: ({ color, size }) => (
@@ -79,7 +85,7 @@ const BottomTabNavigator = () => {
           ),
         }}
       />
-      <Tab.Screen 
+      <Tab.Screen
         name="BookshelfTab"
         component={BookShelfStackNavigator}
         options={{
@@ -87,6 +93,10 @@ const BottomTabNavigator = () => {
             <Entypo name="open-book" color={color} size={size} />
           )
         }}
+      />
+      <Tab.Screen
+        name="test"
+        component={test}
       />
     </Tab.Navigator>
   );

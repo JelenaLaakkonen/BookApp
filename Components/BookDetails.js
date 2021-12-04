@@ -1,6 +1,12 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { StyleSheet, Text, View, Image, ImageBackground, ScrollView, StatusBar } from 'react-native';
+import { StyleSheet, Text, View, Image, ImageBackground, ScrollView, Button } from 'react-native';
 import styles from './Styles';
+import { initializeApp } from 'firebase/app';
+import { getDatabase, push, ref } from "firebase/database";
+import firebaseConfig from './firebaseConfig';
+
+initializeApp(firebaseConfig);
+const database = getDatabase();
 
 export default function BookDetails({ route, navigation }) {
 
@@ -9,12 +15,22 @@ export default function BookDetails({ route, navigation }) {
     const [imageLink, setImageLink] = useState({});
     const [textShown, setTextShown] = useState(false); //To show ur remaining Text
     const [lengthMore, setLengthMore] = useState(false); //to show the "Read more & Less Line"
+    const [buttonColor, setButtonColor] = useState('rgb(116, 144, 147)');
+    const [buttonText, setButtonText] = useState('Add book to shelf');
+
+    const addBook = () => {
+        push(ref(database, 'items/'), {
+            bookDetails
+        });
+        setButtonColor('grey')
+        setButtonText('In bookshelf')
+        //TODO: if text == in bookshelf -- remove
+    };
 
     useEffect(() => {
         fetch(`${link}?key=AIzaSyAC_om6HN224gaJSHas_OVPDpuJEXwQj2U`)
             .then(response => response.json())
             .then(data => {
-                console.log(data.volumeInfo);
                 setBookDetails(data.volumeInfo);
                 setImageLink(data.volumeInfo.imageLinks)
             })
@@ -55,6 +71,12 @@ export default function BookDetails({ route, navigation }) {
                             style={styles.descriptionMore}>{textShown ? 'Read less...' : 'Read more...'}</Text>
                             : null
                     }
+                </View>
+                <View style={styles.button}>
+                    <Button onPress={addBook}
+                        color={buttonColor}
+                        title={buttonText}
+                    />
                 </View>
                 <Text style={styles2.additionalInfo}>- {bookDetails.pageCount} pages - First published {bookDetails.publishedDate} - Publisher {bookDetails.publisher}</Text>
             </ScrollView>
