@@ -9,7 +9,9 @@ import Register from './Components/Register';
 import Bookshelf from './Components/Bookshelf';
 import BookDetails from './Components/BookDetails';
 import { signIn, store } from './Components/SigninReducer';
-import test from './Components/test'
+import bookshelves from './Components/bookshelves'
+import currentlyReading from "./Components/currentlyReading";
+import WantToRead from "./Components/WantToRead";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -20,11 +22,21 @@ const AuthStack = () => {
       <Stack.Screen
         name="Login"
         component={Login}
-        options={{ headerShown: false }}
+        options={{
+          headerStyle: {
+            backgroundColor: 'rgb(116, 144, 147)',
+          },
+          headerTitle: ""
+        }}
       />
       <Stack.Screen
         name="Register"
         component={Register}
+        options={{
+          headerStyle: {
+            backgroundColor: 'rgb(116, 144, 147)',
+          }
+        }}
       />
     </Stack.Navigator>
   );
@@ -56,8 +68,8 @@ const BookShelfStackNavigator = () => {
   return (
     <Stack.Navigator>
       <Stack.Screen
-        name="Bookshelf"
-        component={Bookshelf}
+        name="Bookshelves"
+        component={bookshelves}
         options={{
           headerRight: () => (
             <AntDesign.Button
@@ -69,6 +81,9 @@ const BookShelfStackNavigator = () => {
             />
           ),
         }} />
+      <Stack.Screen name="Read" component={Bookshelf} />
+      <Stack.Screen name="Currently Reading" component={currentlyReading} />
+      <Stack.Screen name="Want to Read" component={WantToRead} />
     </Stack.Navigator>
   );
 }
@@ -94,16 +109,12 @@ const BottomTabNavigator = () => {
           )
         }}
       />
-      <Tab.Screen
-        name="test"
-        component={test}
-      />
     </Tab.Navigator>
   );
 };
 
 export default function App() {
-  const [isSigned, setIsSigned] = useState(true);
+  const [isSigned, setIsSigned] = useState(false);
 
   // Update state from redux
   store.subscribe(() => {

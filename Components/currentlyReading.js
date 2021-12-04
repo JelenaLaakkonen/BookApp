@@ -8,12 +8,12 @@ import firebaseConfig from './firebaseConfig';
 initializeApp(firebaseConfig);
 const database = getDatabase();
 
-export default function Bookshelf() {
+export default function currentlyReading() {
 
   const [items, setItems] = useState([]);
 
   useEffect(() => {
-    const itemsRef = ref(database, 'read/')
+    const itemsRef = ref(database, 'currentlyReading/')
     onValue(itemsRef, (snapshot) => {
       const data = snapshot.val();
       if (data === null) {
@@ -26,7 +26,7 @@ export default function Bookshelf() {
   const deleteItem = (bookDetails) => {
     const key = Object.keys(items)[10];
     console.log(key);
-    remove(ref(database, 'read/'+key), {
+    remove(ref(database, 'currentlyReading/'+key), {
       bookDetails
     });
   };

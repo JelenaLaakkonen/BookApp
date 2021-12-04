@@ -41,7 +41,7 @@ export default function Login({ navigation }) {
             <Text style={styles.title}>Welcome to Book Owl</Text>
             <View style={styles.inputView}>
                 <TextInput
-                    style={styles.TextInput}
+                    style={styles.textInput}
                     placeholder="Email"
                     placeholderTextColor="#003f5c"
                     onChangeText={(email) => setEmail(email)}
@@ -56,11 +56,11 @@ export default function Login({ navigation }) {
                     onChangeText={(password) => setPassword(password)}
                 />
             </View>
-            <TouchableOpacity style={styles.registerBtn} onPress={() => navigation.navigate('Register')}>
-                <Text>Register here</Text>
-            </TouchableOpacity>
             <TouchableOpacity style={styles.loginBtn} onPress={onLogin}>
                 <Text>LOGIN</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.registerBtn} onPress={() => navigation.navigate('Register')}>
+                <Text>Register here</Text>
             </TouchableOpacity>
         </View>
     );
@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
         height: 50,
         alignItems: "center",
         justifyContent: "center",
-        marginTop: 40,
+        marginTop: 10,
         backgroundColor: "rgb(116, 144, 147)",
     },
     inputView: {
@@ -110,9 +110,10 @@ const styles = StyleSheet.create({
         height: 50,
         flex: 1,
         padding: 10,
+        textAlign: 'center'
     },
     loginImage: {
-        width: "45%",
+        width: "55%",
         height: "35%",
         borderRadius: 25,
         alignItems: "center",

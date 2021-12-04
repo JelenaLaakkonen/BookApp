@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { StyleSheet, Text, View, Image, ImageBackground, ScrollView, Button } from 'react-native';
+import { Picker } from '@react-native-picker/picker';
 import styles from './Styles';
 import { initializeApp } from 'firebase/app';
 import { getDatabase, push, ref } from "firebase/database";
@@ -17,9 +18,11 @@ export default function BookDetails({ route, navigation }) {
     const [lengthMore, setLengthMore] = useState(false); //to show the "Read more & Less Line"
     const [buttonColor, setButtonColor] = useState('rgb(116, 144, 147)');
     const [buttonText, setButtonText] = useState('Add book to shelf');
+    const [selectedShelf, setSelectedShelf] = useState('read')
 
     const addBook = () => {
-        push(ref(database, 'items/'), {
+        console.log(selectedShelf);
+        push(ref(database, selectedShelf+'/'), {
             bookDetails
         });
         setButtonColor('grey')
@@ -72,8 +75,22 @@ export default function BookDetails({ route, navigation }) {
                             : null
                     }
                 </View>
+
+                <View style={styles2.pickerContainer}>
+                    <Picker
+                        style={styles2.picker}
+                        selectedValue={selectedShelf}
+                        onValueChange={(itemValue, itemIndex) =>
+                            setSelectedShelf(itemValue)
+                        }>
+                        <Picker.Item label="Read" value="read" />
+                        <Picker.Item label="Currently Reading" value="currentlyReading" />
+                        <Picker.Item label="Want to Read" value="wantToRead" />
+                    </Picker>
+                </View>
                 <View style={styles.button}>
-                    <Button onPress={addBook}
+                    <Button
+                        onPress={addBook}
                         color={buttonColor}
                         title={buttonText}
                     />
@@ -92,6 +109,15 @@ const styles2 = StyleSheet.create({
         backgroundColor: '#fff',
         alignItems: 'center',
         justifyContent: 'center',
+    },
+    picker: {
+        width: 200,
+        color: 'white',
+        backgroundColor: 'rgb(116, 144, 147)'
+    },
+    pickerContainer: {
+        alignItems: 'center',
+        marginTop: 10,
     },
     imageContainer: {
         flex: 1,
