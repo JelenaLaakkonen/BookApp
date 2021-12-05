@@ -49,6 +49,9 @@ const MainStackNavigator = () => {
         name="Search"
         component={searchPage}
         options={{
+          headerStyle: {
+            backgroundColor: 'rgb(116, 144, 147)',
+          },
           headerRight: () => (
             <AntDesign.Button
               onPress={() => store.dispatch(signIn(false))}
@@ -71,6 +74,9 @@ const BookShelfStackNavigator = () => {
         name="Bookshelves"
         component={bookshelves}
         options={{
+          headerStyle: {
+            backgroundColor: 'rgb(116, 144, 147)',
+          },
           headerRight: () => (
             <AntDesign.Button
               onPress={() => store.dispatch(signIn(false))}
@@ -90,7 +96,11 @@ const BookShelfStackNavigator = () => {
 
 const BottomTabNavigator = () => {
   return (
-    <Tab.Navigator screenOptions={{ headerShown: false }}>
+    <Tab.Navigator
+      screenOptions={{ headerShown: false }}
+      tabBarOptions={{
+        activeTintColor: 'rgb(116, 144, 147)'
+      }}>
       <Tab.Screen
         name="SearchTab"
         component={MainStackNavigator}
@@ -114,7 +124,7 @@ const BottomTabNavigator = () => {
 };
 
 export default function App() {
-  const [isSigned, setIsSigned] = useState(false);
+  const [isSigned, setIsSigned] = useState(true);
 
   // Update state from redux
   store.subscribe(() => {

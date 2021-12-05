@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Text, View, Button, FlatList, StyleSheet, Image } from 'react-native';
+import { Text, View, Button, FlatList, StyleSheet, Image, Alert } from 'react-native';
 import styles from './Styles';
 import { initializeApp } from 'firebase/app';
 import { getDatabase, ref, onValue, remove } from "firebase/database";
@@ -24,12 +24,28 @@ export default function Bookshelf() {
   }, []);
 
   const deleteItem = (bookDetails) => {
-    const key = Object.keys(items)[10];
-    console.log(key);
-    remove(ref(database, 'read/'+key), {
-      bookDetails
-    });
-  };
+    Alert.alert(
+      'Remove book from shelf?',
+      'Remove will be permanent',
+      [
+        { text: 'NO', onPress: () => console.log("Cancel Pressed"), style: 'cancel' },
+        {
+          text: 'YES', onPress: () => {
+            const readRef = ref(database, 'read/');
+            onValue(readRef, (snapshot) => {
+              snapshot.forEach((childSnap) => {
+                if (childSnap.val().bookDetails.title === bookDetails.title) {
+                  const deleteRef = ref(database, 'read/' + childSnap.key);
+                  console.log(deleteRef);
+                  remove(deleteRef);
+                }
+              })
+            })
+          }
+        },
+      ]
+    )
+  }
 
   const renderItem = ({ item }) => (
     <View style={styles.bookContainer}>

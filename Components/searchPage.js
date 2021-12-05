@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Text, View, TextInput, Button, FlatList, Image, TouchableNativeFeedback } from 'react-native';
+import { Text, View, TextInput, Button, FlatList, Image, TouchableNativeFeedback, TouchableOpacity } from 'react-native';
 import styles from './Styles';
 
 export default function searchPage({ navigation }) {
@@ -53,11 +53,12 @@ export default function searchPage({ navigation }) {
 
   const renderEmptyContainer = () => (
     <View style={styles.container}>
-      <Text style={styles.title}>Search for books</Text>
+      <Text style={styles.searchTitle}>Search for books</Text>
       <Image
         style={{
           width: 250,
           height: 200,
+          marginTop: 80
         }}
         source={require('../assets/searchImage.png')}
       />
@@ -89,13 +90,9 @@ export default function searchPage({ navigation }) {
           onChangeText={input => setInput(input)}
         />
       </View>
-      <View style={styles.button}>
-        <Button
-          onPress={() => getBooks(input)}
-          color="rgb(116, 144, 147)"
-          title="Find"
-        />
-      </View>
+      <TouchableOpacity style={styles.searchButton} onPress={() => getBooks(input)}>
+        <Text>SEARCH</Text>
+      </TouchableOpacity>
     </View>
   );
 }
