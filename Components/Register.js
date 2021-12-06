@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import { Text, View, TextInput, Alert, TouchableOpacity, StyleSheet, Image } from "react-native";
+import { Text, View, TextInput, Alert, TouchableOpacity, Image } from "react-native";
 import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
 import { initializeApp } from 'firebase/app';
 import firebaseConfig from './firebaseConfig';
+import styles from './Styles';
 
 // Initialize Firebase
 initializeApp(firebaseConfig);
@@ -12,106 +13,65 @@ export default function Register({ navigation }) {
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
 
-  //await firebase.auth().signInWithEmailAndPassword(email, password)
-  const createNewUser = async () => {
+  // Creates user if valid credentials and navigates back to 'Login' page
+  const createNewUser = () => {
     try {
       if (email !== '' && password !== '') {
-        let response = await createUserWithEmailAndPassword(auth, email, password);
-        if (response) {
-          Alert.alert('User Created Succesfully');
-          navigation.goBack()
-        } else {
-          Alert.alert('Credentials Cannot Be Empty');
-        }
+        createUserWithEmailAndPassword(auth, email, password)
+          .then(() => Alert.alert('User Was Created Succesfully'))
+          .then(() => navigation.goBack())
+          .catch(error => {
+            switch (error.code) {
+              case 'auth/email-already-in-use':
+                Alert.alert('Email Already Exists!')
+                break;
+              case 'auth/invalid-email':
+                Alert.alert('Invalid Email!')
+                break;
+              case 'auth/weak-password':
+                Alert.alert('Password Should Be at least 6 Characters!')
+                break;
+            }
+          })
+      } else {
+        Alert.alert('Credentials Cannot Be Empty')
       }
     } catch (err) {
-      console.error(err);
+      alert(err);
     }
-  };
+  }
 
   return (
-    <View style={styles2.container}>
+    <View style={styles.registerContainer}>
       <Image
-        style={styles2.loginImage}
+        style={styles.registerImage}
         source={require('../assets/logo.png')}
       />
-      <Text style={styles2.title}>Please type in your credentials</Text>
-      <View style={styles2.inputView}>
+      <Text style={styles.registerTitle}>Please type in your credentials</Text>
+      <View style={styles.registerInputView}>
         <TextInput
-          style={styles2.textInput}
+          style={styles.registerTextInput}
           value={email}
-          placeholder="email"
+          placeholder="Email"
+          placeholderTextColor="rgb(116, 144, 147)"
           onChangeText={(email) => setEmail(email)}
-          style={styles2.registerInput}
+          style={styles.registerInput}
         />
       </View>
-      <View style={styles2.inputView}>
+      <View style={styles.registerInputView}>
         <TextInput
-          style={styles2.textInput}
+          style={styles.registerTextInput}
           value={password}
-          placeholder="password"
+          placeholder="Password"
+          placeholderTextColor="rgb(116, 144, 147)"
           secureTextEntry={true}
           onChangeText={(password) => setPassword(password)}
-          style={styles2.registerInput}
+          style={styles.registerInput}
         />
       </View>
-      <TouchableOpacity onPress={createNewUser} style={styles2.registerBtn}>
+      <TouchableOpacity onPress={createNewUser} style={styles.registerBtn}>
         <Text>Create user</Text>
       </TouchableOpacity>
     </View>
   );
 }
-
-const styles2 = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  title: {
-    fontFamily: 'serif',
-    fontSize: 20,
-    marginBottom: 30,
-  },
-  registerBtn: {
-    width: "40%",
-    borderRadius: 25,
-    height: 50,
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: 10,
-    backgroundColor: "rgb(116, 144, 147)",
-  },
-  inputView: {
-    backgroundColor: "#fff",
-    borderRadius: 30,
-    width: "70%",
-    height: 45,
-    marginBottom: 20,
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: 'black',
-  },
-  textInput: {
-    height: 50,
-    flex: 1,
-    padding: 10,
-    textAlign: 'center'
-  },
-  loginImage: {
-    width: "55%",
-    height: "35%",
-    borderRadius: 25,
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: -20,
-    marginBottom: 5,
-    backgroundColor: "transparent",
-  },
-  registerInput: {
-    height: 50,
-    flex: 1,
-    padding: 10,
-  }
-});

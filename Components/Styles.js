@@ -7,6 +7,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
   },
+
   inputView: {
     backgroundColor: "#fff",
     borderRadius: 30,
@@ -43,14 +44,17 @@ const styles = StyleSheet.create({
     marginBottom: 30,
   },
   shelvesTitle: {
-    paddingVertical: 30,
+    paddingTop: 30,
+    paddingBottom: 10,
     textAlign: 'center',
     fontFamily: 'serif',
     alignItems: "center",
     fontSize: 20,
-    width: '70%',
-    marginBottom: 30,
+    width: '60%',
+    marginBottom: 10,
     fontWeight: 'bold',
+    borderBottomWidth: 1,
+    borderColor: "rgb(116, 144, 147)",
   },
   shelfTitle: {
     paddingVertical: 30,
@@ -88,7 +92,115 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 10,
     marginBottom: 10
-  }
+  },
+  // Register Styles...
+  registerContainer: {
+    flex: 1,
+    backgroundColor: "#fff",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  registerTitle: {
+    fontFamily: 'serif',
+    fontSize: 20,
+    marginBottom: 30,
+  },
+  registerBtn: {
+    width: "40%",
+    borderRadius: 25,
+    height: 50,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 10,
+    backgroundColor: "rgb(116, 144, 147)",
+  },
+  registerInputView: {
+    backgroundColor: "#fff",
+    borderRadius: 30,
+    width: "70%",
+    height: 45,
+    marginBottom: 20,
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: 'black',
+  },
+  registerTextInput: {
+    height: 50,
+    flex: 1,
+    padding: 10,
+    textAlign: 'center'
+  },
+  registerImage: {
+    width: "55%",
+    height: "35%",
+    borderRadius: 25,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: -20,
+    marginBottom: 5,
+    backgroundColor: "transparent",
+  },
+  registerInput: {
+    height: 50,
+    flex: 1,
+    padding: 10,
+  },
+  // Login styles...
+  loginContainer: {
+    flex: 1,
+    backgroundColor: "#fff",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  loginRegisterBtn: {
+    width: "40%",
+    borderRadius: 25,
+    height: 50,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 20,
+    backgroundColor: "transparent",
+  },
+  loginTitle: {
+    fontFamily: 'serif',
+    fontSize: 20,
+    marginBottom: 30,
+  },
+  loginBtn: {
+    width: "40%",
+    borderRadius: 25,
+    height: 50,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 10,
+    backgroundColor: "rgb(116, 144, 147)",
+  },
+  loginInputView: {
+    backgroundColor: "#fff",
+    borderRadius: 30,
+    width: "70%",
+    height: 45,
+    marginBottom: 20,
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: 'black',
+  },
+  loginTextInput: {
+    height: 50,
+    flex: 1,
+    padding: 10,
+    textAlign: 'center'
+  },
+  loginImage: {
+    width: "55%",
+    height: "35%",
+    borderRadius: 25,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: -20,
+    marginBottom: 5,
+    backgroundColor: "transparent",
+  },
 });
 
 export default styles;

@@ -62,7 +62,15 @@ const MainStackNavigator = () => {
             />
           ),
         }} />
-      <Stack.Screen name="BookDetails" component={BookDetails} />
+      <Stack.Screen
+        name="BookDetails"
+        component={BookDetails}
+        options={{
+          headerStyle: {
+            backgroundColor: 'rgb(116, 144, 147)',
+          }
+        }}
+      />
     </Stack.Navigator>
   );
 }
@@ -97,10 +105,8 @@ const BookShelfStackNavigator = () => {
 const BottomTabNavigator = () => {
   return (
     <Tab.Navigator
-      screenOptions={{ headerShown: false }}
-      tabBarOptions={{
-        activeTintColor: 'rgb(116, 144, 147)'
-      }}>
+      screenOptions={{ headerShown: false, tabBarActiveTintColor: 'rgb(116, 144, 147)' }}
+    >
       <Tab.Screen
         name="SearchTab"
         component={MainStackNavigator}
@@ -124,7 +130,8 @@ const BottomTabNavigator = () => {
 };
 
 export default function App() {
-  const [isSigned, setIsSigned] = useState(true);
+
+  const [isSigned, setIsSigned] = useState(false);
 
   // Update state from redux
   store.subscribe(() => {

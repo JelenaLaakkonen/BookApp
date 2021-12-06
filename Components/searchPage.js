@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Text, View, TextInput, Button, FlatList, Image, TouchableNativeFeedback, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { Text, View, TextInput, FlatList, Image, TouchableNativeFeedback, TouchableOpacity, Alert } from 'react-native';
 import styles from './Styles';
 
 export default function searchPage({ navigation }) {
@@ -10,16 +10,20 @@ export default function searchPage({ navigation }) {
   const [resultAmount, setResultAmount] = useState('');
 
   const getBooks = (input) => {
-    fetch(`https://www.googleapis.com/books/v1/volumes?q=${input}&maxResults=40&key=AIzaSyAC_om6HN224gaJSHas_OVPDpuJEXwQj2U`)
-      .then(response => response.json())
-      .then(data => {
-        setBooks(data.items);
-        const numToString = data.totalItems.toString();
-        setResultAmount(numToString + ' results for "' + input + '"');
-      })
-      .catch((err) => {
-        console.error('Error', err);
-      });
+    if (input === '') {
+      Alert.alert('Search field cannot be empty');
+    } else {
+      fetch(`https://www.googleapis.com/books/v1/volumes?q=${input}&maxResults=40&key=AIzaSyAC_om6HN224gaJSHas_OVPDpuJEXwQj2U`)
+        .then(response => response.json())
+        .then(data => {
+          setBooks(data.items);
+          const numToString = data.totalItems.toString();
+          setResultAmount(numToString + ' results for "' + input + '"');
+        })
+        .catch((err) => {
+          console.error('Error', err);
+        });
+    }
   };
 
   const renderItem = ({ item }) => (

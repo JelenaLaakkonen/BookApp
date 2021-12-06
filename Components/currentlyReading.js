@@ -4,16 +4,22 @@ import styles from './Styles';
 import { initializeApp } from 'firebase/app';
 import { getDatabase, ref, onValue, remove } from "firebase/database";
 import firebaseConfig from './firebaseConfig';
+import { userStore } from './UserReducer';
 
 initializeApp(firebaseConfig);
 const database = getDatabase();
 
 export default function currentlyReading() {
 
+  const [uid, setUid] = useState('');
   const [items, setItems] = useState([]);
 
   useEffect(() => {
-    const itemsRef = ref(database, 'currentlyReading/')
+    setUid(userStore.getState());
+  });
+
+  useEffect(() => {
+    const itemsRef = ref(database, uid + '/currentlyReading/')
     onValue(itemsRef, (snapshot) => {
       const data = snapshot.val();
       if (data === null) {
@@ -21,7 +27,7 @@ export default function currentlyReading() {
         setItems(Object.values(data));
       }
     })
-  }, []);
+  }, [uid]);
 
   const deleteItem = (bookDetails) => {
     Alert.alert(
@@ -31,11 +37,11 @@ export default function currentlyReading() {
         { text: 'NO', onPress: () => console.log("Cancel Pressed"), style: 'cancel' },
         {
           text: 'YES', onPress: () => {
-            const readRef = ref(database, 'currentlyReading/');
+            const readRef = ref(database, uid + '/currentlyReading/');
             onValue(readRef, (snapshot) => {
               snapshot.forEach((childSnap) => {
                 if (childSnap.val().bookDetails.title === bookDetails.title) {
-                  const deleteRef = ref(database, 'currentlyReading/' + childSnap.key);
+                  const deleteRef = ref(database, uid + '/currentlyReading/' + childSnap.key);
                   console.log(deleteRef);
                   remove(deleteRef);
                 }

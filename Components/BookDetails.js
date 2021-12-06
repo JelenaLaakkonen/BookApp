@@ -5,12 +5,19 @@ import styles from './Styles';
 import { initializeApp } from 'firebase/app';
 import { getDatabase, push, ref } from "firebase/database";
 import firebaseConfig from './firebaseConfig';
+import { userStore } from './UserReducer';
 
+// Initialize Firebase
 initializeApp(firebaseConfig);
 const database = getDatabase();
 
 export default function BookDetails({ route, navigation }) {
+    
+    useEffect(() => {
+        setUid(userStore.getState());
+    });
 
+    const [uid, setUid] = useState('');
     const { link } = route.params;
     const [bookDetails, setBookDetails] = useState({});
     const [imageLink, setImageLink] = useState({});
@@ -22,7 +29,7 @@ export default function BookDetails({ route, navigation }) {
 
     const addBook = () => {
         console.log(selectedShelf);
-        push(ref(database, selectedShelf+'/'), {
+        push(ref(database, uid + '/' + selectedShelf + '/'), {
             bookDetails
         });
         setButtonColor('grey')
@@ -75,7 +82,6 @@ export default function BookDetails({ route, navigation }) {
                             : null
                     }
                 </View>
-
                 <View style={styles2.pickerContainer}>
                     <Picker
                         style={styles2.picker}

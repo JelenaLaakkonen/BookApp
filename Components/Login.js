@@ -1,57 +1,86 @@
 
 import React, { useState } from "react";
-import { StyleSheet, Alert, Text, View, Image, TextInput, TouchableOpacity } from "react-native";
-import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
+import { Alert, Text, View, Image, TextInput, TouchableOpacity } from "react-native";
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth';
 import { initializeApp } from 'firebase/app';
 import { signIn, store } from './SigninReducer';
 import firebaseConfig from './firebaseConfig';
+import { getDatabase } from "firebase/database";
+import { userInfo, userStore } from './UserReducer';
+import styles from './Styles';
 
 // Initialize Firebase
 initializeApp(firebaseConfig);
 const auth = getAuth();
 
 export default function Login({ navigation }) {
+
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-
-    //await firebase.auth().signInWithEmailAndPassword(email, password)
-    const onLogin = async () => {
+    
+    // Listen to any changes in 'user' data and set "userReducer's" store to "user.uid"
+    const authListener = () => {
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                const uid = user.uid;
+                userStore.dispatch(userInfo(uid))
+            } else {
+                userStore.dispatch(userInfo(''))
+            }
+        })
+    };
+    // Login if credentials match existing crendentials and if so, set "signInReducer's" store to "true"
+    const onLogin = () => {
         try {
             if (email !== '' && password !== '') {
-                let response = await signInWithEmailAndPassword(auth, email, password);
-                if (response) {
-                    console.log(response)
-                    store.dispatch(signIn(true))
-                } else {
-                    store.dispatch(signIn(false))
-                    Alert.alert('Wrong Email or Password');
-                }
+                signInWithEmailAndPassword(auth, email, password)
+                    .then(() => store.dispatch(signIn(true)))
+                    .then(() => authListener())
+                    .catch(error => {
+                        switch (error.code) {
+                            case 'auth/user-not-found':
+                                Alert.alert('User Not Found!')
+                                break;
+                            case 'auth/wrong-password':
+                                Alert.alert('Incorrect Password!')
+                                break;
+                            case 'auth/invalid-email':
+                                Alert.alert('Invalid Email!')
+                                break;
+                            case 'auth/too-many-requests':
+                                Alert.alert('Too Many Login Attempts. Try again later!')
+                                break;
+                        }
+                    })
+            } else {
+                Alert.alert('Login Fields Cannot Be Empty')
             }
         } catch (err) {
-            console.error(err);
+            alert(err);
         }
-    };
+    }
+
 
     return (
-        <View style={styles.container}>
+        <View style={styles.loginContainer}>
             <Image
                 style={styles.loginImage}
                 source={require('../assets/logo.png')}
             />
-            <Text style={styles.title}>Welcome to Book Owl</Text>
-            <View style={styles.inputView}>
+            <Text style={styles.loginTitle}>Welcome to Book Owl</Text>
+            <View style={styles.loginInputView}>
                 <TextInput
-                    style={styles.textInput}
+                    style={styles.loginTextInput}
                     placeholder="Email"
-                    placeholderTextColor="#003f5c"
+                    placeholderTextColor="rgb(116, 144, 147)"
                     onChangeText={(email) => setEmail(email)}
                 />
             </View>
-            <View style={styles.inputView}>
+            <View style={styles.loginInputView}>
                 <TextInput
-                    style={styles.textInput}
+                    style={styles.loginTextInput}
                     placeholder="Password"
-                    placeholderTextColor="#003f5c"
+                    placeholderTextColor="rgb(116, 144, 147)"
                     secureTextEntry={true}
                     onChangeText={(password) => setPassword(password)}
                 />
@@ -59,71 +88,9 @@ export default function Login({ navigation }) {
             <TouchableOpacity style={styles.loginBtn} onPress={onLogin}>
                 <Text>LOGIN</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.registerBtn} onPress={() => navigation.navigate('Register')}>
+            <TouchableOpacity style={styles.loginRegisterBtn} onPress={() => navigation.navigate('Register')}>
                 <Text>Register here</Text>
             </TouchableOpacity>
         </View>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: "#fff",
-        alignItems: "center",
-        justifyContent: "center",
-    },
-    registerBtn: {
-        width: "40%",
-        borderRadius: 25,
-        height: 50,
-        alignItems: "center",
-        justifyContent: "center",
-        marginTop: 20,
-        backgroundColor: "transparent",
-    },
-    title: {
-        fontFamily: 'serif',
-        fontSize: 20,
-        marginBottom: 30,
-    },
-    loginBtn: {
-        width: "40%",
-        borderRadius: 25,
-        height: 50,
-        alignItems: "center",
-        justifyContent: "center",
-        marginTop: 10,
-        backgroundColor: "rgb(116, 144, 147)",
-    },
-    inputView: {
-        backgroundColor: "#fff",
-        borderRadius: 30,
-        width: "70%",
-        height: 45,
-        marginBottom: 20,
-        alignItems: "center",
-        borderWidth: 1,
-        borderColor: 'black',
-    },
-    textInput: {
-        height: 50,
-        flex: 1,
-        padding: 10,
-        textAlign: 'center'
-    },
-    loginImage: {
-        width: "55%",
-        height: "35%",
-        borderRadius: 25,
-        alignItems: "center",
-        justifyContent: "center",
-        marginTop: -20,
-        marginBottom: 5,
-        backgroundColor: "transparent",
-    },
-    forgot_button: {
-        height: 30,
-        marginBottom: 30,
-    },
-});
