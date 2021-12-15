@@ -17,7 +17,7 @@ export default function Register({ navigation }) {
   const createNewUser = () => {
     try {
       if (email !== '' && password !== '') {
-        createUserWithEmailAndPassword(auth, email, password)
+        createUserWithEmailAndPassword(auth, email.replace(' ', ''), password.replace(' ', ''))
           .then(() => Alert.alert('User Was Created Succesfully'))
           .then(() => navigation.goBack())
           .catch(error => {
@@ -53,6 +53,8 @@ export default function Register({ navigation }) {
           style={styles.registerTextInput}
           value={email}
           placeholder="Email"
+          autoCapitalize='none'
+          keyboardType='email-address'
           placeholderTextColor="rgb(116, 144, 147)"
           onChangeText={(email) => setEmail(email)}
           style={styles.registerInput}

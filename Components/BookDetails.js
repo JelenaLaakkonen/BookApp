@@ -1,9 +1,9 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { StyleSheet, Text, View, Image, ImageBackground, ScrollView, Button } from 'react-native';
+import { Text, View, Image, ImageBackground, ScrollView, Button, Alert } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import styles from './Styles';
 import { initializeApp } from 'firebase/app';
-import { getDatabase, push, ref } from "firebase/database";
+import { getDatabase, ref, onValue, push } from "firebase/database";
 import firebaseConfig from './firebaseConfig';
 import { userStore } from './UserReducer';
 
@@ -11,70 +11,93 @@ import { userStore } from './UserReducer';
 initializeApp(firebaseConfig);
 const database = getDatabase();
 
-export default function BookDetails({ route, navigation }) {
-    
+export default function BookDetails({ route }) {
+
+    const { link } = route.params;
+    const [uid, setUid] = useState('');
+    const [bookDetails, setBookDetails] = useState({});
+    const [imageLink, setImageLink] = useState({});
+    const [textShown, setTextShown] = useState(false);
+    const [lengthMore, setLengthMore] = useState(false);
+    const [selectedShelf, setSelectedShelf] = useState('read')
+    const [description, setDescription] = useState('');
+    const [exists, setExists] = useState(false);
+    const [authors, setAuthors] = useState([]);
+
+    // Get userId from UserStore and set it
     useEffect(() => {
         setUid(userStore.getState());
     });
 
-    const [uid, setUid] = useState('');
-    const { link } = route.params;
-    const [bookDetails, setBookDetails] = useState({});
-    const [imageLink, setImageLink] = useState({});
-    const [textShown, setTextShown] = useState(false); //To show ur remaining Text
-    const [lengthMore, setLengthMore] = useState(false); //to show the "Read more & Less Line"
-    const [buttonColor, setButtonColor] = useState('rgb(116, 144, 147)');
-    const [buttonText, setButtonText] = useState('Add book to shelf');
-    const [selectedShelf, setSelectedShelf] = useState('read')
-
-    const addBook = () => {
-        console.log(selectedShelf);
-        push(ref(database, uid + '/' + selectedShelf + '/'), {
-            bookDetails
-        });
-        setButtonColor('grey')
-        setButtonText('In bookshelf')
-        //TODO: if text == in bookshelf -- remove
-    };
-
+    // Fetch book from API and set data
     useEffect(() => {
         fetch(`${link}?key=AIzaSyAC_om6HN224gaJSHas_OVPDpuJEXwQj2U`)
             .then(response => response.json())
             .then(data => {
                 setBookDetails(data.volumeInfo);
                 setImageLink(data.volumeInfo.imageLinks)
+                setAuthors(data.volumeInfo.authors.join(' & '));
+                if (data.volumeInfo.description) {
+                    setDescription(data.volumeInfo.description.replace(/\<[^>]*>?/gm, '').replace(/\&quot;/gm, ''))
+                }
             })
             .catch((e) => console.error(e))
     }, []);
 
-    const toggleNumberOfLines = () => { //To toggle the show text or hide it
+    // Wait for checkBook to finish and then add book if it's not in database
+    const addBook = async () => {
+        await checkBook();
+        if (exists === false) {
+            push(ref(database, uid + '/' + selectedShelf + '/'), {
+                bookDetails, rating: ''
+            });
+        } else {
+            Alert.alert('Book Is Already in the Selected Shelf');
+        }
+    };
+
+    // Check if book is in database and setExist to true or false
+    const checkBook = async () => {
+        const readRef = ref(database, uid + '/' + selectedShelf + '/');
+        onValue(readRef, (snapshot) => {
+            snapshot.forEach((childSnap) => {
+                if (childSnap.val().bookDetails.title === bookDetails.title) {
+                    setExists(true);
+                } else {
+                    setExists(false);
+                }
+            })
+        })
+    }
+
+    // To toggle the show text or hide it
+    const toggleNumberOfLines = () => {
         setTextShown(!textShown);
     }
 
+    // To check the text is more than 4 lines or not
     const onTextLayout = useCallback(e => {
-        setLengthMore(e.nativeEvent.lines.length >= 4); //to check the text is more than 4 lines or not
-        // console.log(e.nativeEvent);
+        setLengthMore(e.nativeEvent.lines.length >= 4);
     }, []);
 
     return (
-
-        <View style={styles2.container}>
+        <View style={styles.detailsContainer}>
             <ScrollView showsVerticalScrollIndicator={false}>
-                <ImageBackground source={{ uri: imageLink.smallThumbnail }} style={styles2.imageContainer} blurRadius={10}>
+                <ImageBackground source={imageLink === undefined ? require('../assets/searchImage.png') : { uri: imageLink.smallThumbnail }} style={styles.detailsImageContainer} blurRadius={10}>
                     <Image
-                        style={styles2.bookImage}
-                        source={{ uri: imageLink.smallThumbnail }}
+                        style={styles.detailsBookImage}
+                        source={imageLink === undefined ? require('../assets/searchImage.png') : { uri: imageLink.smallThumbnail }}
                         resizeMode='contain'
                     />
                 </ImageBackground>
-                <View style={styles2.container}>
-                    <Text style={styles2.title}>{bookDetails.title}</Text>
-                    <Text style={styles2.author}>by {bookDetails.authors}</Text>
-                    <Text style={styles2.header}>Book description</Text>
+                <View style={styles.detailsContainer}>
+                    <Text style={styles.detailsTitle}>{bookDetails.title}</Text>
+                    <Text style={styles.detailsAuthor}>by {authors}</Text>
+                    <Text style={styles.detailsHeader}>Book description</Text>
                     <Text
                         onTextLayout={onTextLayout}
                         numberOfLines={textShown ? undefined : 4}
-                        style={styles2.description}>{bookDetails.description}</Text>
+                        style={styles.detailsDescription}>{description}</Text>
                     {
                         lengthMore ? <Text
                             onPress={toggleNumberOfLines}
@@ -82,9 +105,9 @@ export default function BookDetails({ route, navigation }) {
                             : null
                     }
                 </View>
-                <View style={styles2.pickerContainer}>
+                <View style={styles.pickerContainer}>
                     <Picker
-                        style={styles2.picker}
+                        style={styles.picker}
                         selectedValue={selectedShelf}
                         onValueChange={(itemValue, itemIndex) =>
                             setSelectedShelf(itemValue)
@@ -97,94 +120,13 @@ export default function BookDetails({ route, navigation }) {
                 <View style={styles.button}>
                     <Button
                         onPress={addBook}
-                        color={buttonColor}
-                        title={buttonText}
+                        color='rgb(116, 144, 147)'
+                        title='ADD BOOK TO SHELF'
                     />
                 </View>
-                <Text style={styles2.additionalInfo}>- {bookDetails.pageCount} pages - First published {bookDetails.publishedDate} - Publisher {bookDetails.publisher}</Text>
+                <Text style={styles.additionalInfo}>- {bookDetails.pageCount} pages - First published {bookDetails.publishedDate} - Publisher {bookDetails.publisher}</Text>
             </ScrollView>
         </View >
 
     );
 }
-
-const styles2 = StyleSheet.create({
-    container: {
-        flex: 1,
-        padding: 10,
-        backgroundColor: '#fff',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    picker: {
-        width: 200,
-        color: 'white',
-        backgroundColor: 'rgb(116, 144, 147)'
-    },
-    pickerContainer: {
-        alignItems: 'center',
-        marginTop: 10,
-    },
-    imageContainer: {
-        flex: 1,
-        flexDirection: 'row',
-        alignItems: 'stretch',
-        width: '100%',
-    },
-    title: {
-        fontFamily: 'serif',
-        marginTop: 10,
-        marginBottom: 5,
-        fontSize: 20,
-        marginRight: -10,
-    },
-    additionalInfo: {
-        fontFamily: 'serif',
-        marginTop: 10,
-        marginBottom: 5,
-        textAlign: 'center',
-        borderBottomColor: 'lightgrey',
-        borderBottomWidth: 1,
-        borderTopColor: 'lightgrey',
-        borderTopWidth: 1,
-        paddingVertical: 15,
-        paddingHorizontal: 30
-    },
-    header: {
-        fontFamily: 'serif',
-        marginTop: 10,
-        marginBottom: 5,
-        fontSize: 20,
-        marginRight: -10,
-        borderBottomColor: 'lightgrey',
-        borderBottomWidth: 2,
-    },
-    author: {
-        fontFamily: 'serif',
-        alignItems: 'center',
-        paddingLeft: 10,
-        marginBottom: 10,
-        borderBottomColor: 'lightgrey',
-        borderBottomWidth: 1,
-    },
-    description: {
-        fontFamily: 'serif',
-        alignItems: 'center',
-        paddingHorizontal: 30,
-        lineHeight: 21
-    },
-    descriptionMore: {
-        fontFamily: 'serif',
-        alignItems: 'center',
-        paddingHorizontal: 30,
-        lineHeight: 21,
-        marginTop: 10
-    },
-    bookImage: {
-        flex: 1,
-        marginVertical: 8,
-        height: 220,
-        width: 220,
-        alignItems: 'center',
-    },
-});

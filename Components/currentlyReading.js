@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Text, View, Button, FlatList, StyleSheet, Image, Alert } from 'react-native';
+import { Text, View, Button, FlatList, Image, Alert } from 'react-native';
 import styles from './Styles';
 import { initializeApp } from 'firebase/app';
 import { getDatabase, ref, onValue, remove } from "firebase/database";
 import firebaseConfig from './firebaseConfig';
 import { userStore } from './UserReducer';
 
+// Initialize Firebase
 initializeApp(firebaseConfig);
 const database = getDatabase();
 
@@ -14,21 +15,25 @@ export default function currentlyReading() {
   const [uid, setUid] = useState('');
   const [items, setItems] = useState([]);
 
+  // Get userId from UserStore and set it
   useEffect(() => {
     setUid(userStore.getState());
   });
 
+  // Get and set books from database
   useEffect(() => {
     const itemsRef = ref(database, uid + '/currentlyReading/')
     onValue(itemsRef, (snapshot) => {
       const data = snapshot.val();
       if (data === null) {
+        setItems([])
       } else {
         setItems(Object.values(data));
       }
     })
   }, [uid]);
 
+  // Removes one book from database
   const deleteItem = (bookDetails) => {
     Alert.alert(
       'Remove book from shelf?',
@@ -53,19 +58,20 @@ export default function currentlyReading() {
     )
   }
 
+  // Flatlist content
   const renderItem = ({ item }) => (
     <View style={styles.bookContainer}>
       <View>
         <Image
           style={styles.bookImage}
-          source={{ uri: item.bookDetails.imageLinks.smallThumbnail }}
+          source={item.bookDetails.imageLinks === undefined ? require('../assets/searchImage.png') : { uri: item.bookDetails.imageLinks.smallThumbnail }}
           resizeMode='contain'
         />
       </View>
       <View>
         <Text style={styles.title}>{item.bookDetails.title}</Text>
         <Text style={styles.author}>by {item.bookDetails.authors}</Text>
-        <View style={styles.button}>
+        <View style={styles.readButton}>
           <Button onPress={() => deleteItem(item.bookDetails)}
             color="rgb(116, 144, 147)"
             title="Remove Book"
@@ -75,6 +81,7 @@ export default function currentlyReading() {
     </View>
   )
 
+  // Flatlist item seperator
   const renderSeparator = () => (
     <View
       style={{
@@ -84,16 +91,18 @@ export default function currentlyReading() {
     />
   )
 
+  // Rendered if flatlist is empty
   const renderEmptyContainer = () => (
     <View style={styles.container}>
-      <Text style={styles.title}>Your Bookshelf is empty :(</Text>
       <Image
         style={{
           width: 250,
-          height: 200,
+          height: 250,
+          marginTop: 130,
         }}
         source={require('../assets/searchImage.png')}
       />
+      <Text style={styles.emptyTitle}>Your Bookshelf is empty :(</Text>
     </View>
   )
 
@@ -110,43 +119,3 @@ export default function currentlyReading() {
     </View>
   );
 }
-
-const styles3 = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    padding: 30,
-  },
-  container2: {
-    flex: 1,
-    justifyContent: 'center',
-    paddingTop: 10,
-    padding: 8,
-    backgroundColor: '#fff',
-  },
-  listContainer: {
-    flex: 1,
-    backgroundColor: '#fff',
-    fontSize: 30,
-  },
-  buttonContainer1: {
-    flex: 4,
-    width: 200,
-    backgroundColor: '#fff',
-    alignItems: 'flex-start',
-    justifyContent: 'space-around',
-    color: 'rgb(136, 136, 250)',
-  },
-  textInput: {
-    fontSize: 30,
-
-  },
-  textContainer: {
-    fontSize: 30,
-
-  },
-  textContainerSmall: {
-    fontSize: 20,
-    padding: 20,
-  },
-});

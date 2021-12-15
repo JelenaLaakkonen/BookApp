@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Text, View, Button, FlatList, StyleSheet, Image, Alert } from 'react-native';
+import { Text, View, Button, FlatList, Image, Alert } from 'react-native';
 import styles from './Styles';
 import { initializeApp } from 'firebase/app';
-import { getDatabase, ref, onValue, remove } from "firebase/database";
+import { getDatabase, ref, onValue, remove, update, get } from "firebase/database";
 import firebaseConfig from './firebaseConfig';
-import { userStore } from './UserReducer';;
+import { userStore } from './UserReducer';
+import { AirbnbRating } from 'react-native-ratings';
 
 // Initialize Firebase
 initializeApp(firebaseConfig);
@@ -15,21 +16,25 @@ export default function Bookshelf() {
   const [uid, setUid] = useState('');
   const [items, setItems] = useState([]);
 
+  // Get userId from UserStore and set it
   useEffect(() => {
     setUid(userStore.getState());
   });
 
+  // Get and set books from database
   useEffect(() => {
     const itemsRef = ref(database, uid + '/read/')
     onValue(itemsRef, (snapshot) => {
       const data = snapshot.val();
       if (data === null) {
+        setItems([])
       } else {
         setItems(Object.values(data));
       }
     })
   }, [uid]);
 
+  // Removes one book from database
   const deleteItem = (bookDetails) => {
     Alert.alert(
       'Remove book from shelf?',
@@ -43,7 +48,6 @@ export default function Bookshelf() {
               snapshot.forEach((childSnap) => {
                 if (childSnap.val().bookDetails.title === bookDetails.title) {
                   const deleteRef = ref(database, uid + '/read/' + childSnap.key);
-                  console.log(deleteRef);
                   remove(deleteRef);
                 }
               })
@@ -54,19 +58,44 @@ export default function Bookshelf() {
     )
   }
 
+  // Adds rating to book
+  const addRating = (rating, bookDetails) => {
+    console.log(rating)
+    const readRef = ref(database, uid + '/read/');
+    get(readRef).then((snapshot) => {
+      snapshot.forEach((childSnap) => {
+        if (childSnap.val().bookDetails.title === bookDetails.title) {
+          update(ref(database, uid + '/read/' + childSnap.key + '/rating'), {
+            rating
+          })
+        }
+      })
+    })
+  }
+
+  // Flatlist content
   const renderItem = ({ item }) => (
     <View style={styles.bookContainer}>
       <View>
         <Image
           style={styles.bookImage}
-          source={{ uri: item.bookDetails.imageLinks.smallThumbnail }}
+          source={item.bookDetails.imageLinks === undefined ? require('../assets/searchImage.png') : { uri: item.bookDetails.imageLinks.smallThumbnail }}
           resizeMode='contain'
         />
       </View>
       <View>
-        <Text style={styles.title}>{item.bookDetails.title}</Text>
+        <Text style={styles.readTitle}>{item.bookDetails.title}</Text>
         <Text style={styles.author}>by {item.bookDetails.authors}</Text>
-        <View style={styles.button}>
+        <View style={styles.rating}>
+          <AirbnbRating
+            reviews={['']}
+            selectedColor="rgb(225, 161, 3)"
+            size={30}
+            defaultRating={item.rating === '' ? 0 : item.rating.rating}
+            onFinishRating={(rating) => addRating(rating, item.bookDetails)}
+          />
+        </View>
+        <View style={styles.readButton}>
           <Button onPress={() => deleteItem(item.bookDetails)}
             color="rgb(116, 144, 147)"
             title="Remove Book"
@@ -76,6 +105,7 @@ export default function Bookshelf() {
     </View>
   )
 
+  // Flatlist item seperator
   const renderSeparator = () => (
     <View
       style={{
@@ -85,16 +115,18 @@ export default function Bookshelf() {
     />
   )
 
+  // Rendered if flatlist is empty
   const renderEmptyContainer = () => (
     <View style={styles.container}>
-      <Text style={styles.title}>Your Bookshelf is empty :(</Text>
       <Image
         style={{
           width: 250,
-          height: 200,
+          height: 250,
+          marginTop: 130,
         }}
         source={require('../assets/searchImage.png')}
       />
+      <Text style={styles.emptyTitle}>Your Bookshelf is empty :(</Text>
     </View>
   )
 
@@ -111,43 +143,3 @@ export default function Bookshelf() {
     </View>
   );
 }
-
-const styles3 = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    padding: 30,
-  },
-  container2: {
-    flex: 1,
-    justifyContent: 'center',
-    paddingTop: 10,
-    padding: 8,
-    backgroundColor: '#fff',
-  },
-  listContainer: {
-    flex: 1,
-    backgroundColor: '#fff',
-    fontSize: 30,
-  },
-  buttonContainer1: {
-    flex: 4,
-    width: 200,
-    backgroundColor: '#fff',
-    alignItems: 'flex-start',
-    justifyContent: 'space-around',
-    color: 'rgb(136, 136, 250)',
-  },
-  textInput: {
-    fontSize: 30,
-
-  },
-  textContainer: {
-    fontSize: 30,
-
-  },
-  textContainerSmall: {
-    fontSize: 20,
-    padding: 20,
-  },
-});

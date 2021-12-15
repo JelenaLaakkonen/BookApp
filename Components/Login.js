@@ -5,7 +5,6 @@ import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from 'firebas
 import { initializeApp } from 'firebase/app';
 import { signIn, store } from './SigninReducer';
 import firebaseConfig from './firebaseConfig';
-import { getDatabase } from "firebase/database";
 import { userInfo, userStore } from './UserReducer';
 import styles from './Styles';
 
@@ -17,7 +16,7 @@ export default function Login({ navigation }) {
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    
+
     // Listen to any changes in 'user' data and set "userReducer's" store to "user.uid"
     const authListener = () => {
         onAuthStateChanged(auth, (user) => {
@@ -29,11 +28,12 @@ export default function Login({ navigation }) {
             }
         })
     };
+
     // Login if credentials match existing crendentials and if so, set "signInReducer's" store to "true"
     const onLogin = () => {
         try {
             if (email !== '' && password !== '') {
-                signInWithEmailAndPassword(auth, email, password)
+                signInWithEmailAndPassword(auth, email.replace(' ', ''), password.replace(' ', ''))
                     .then(() => store.dispatch(signIn(true)))
                     .then(() => authListener())
                     .catch(error => {
@@ -60,7 +60,6 @@ export default function Login({ navigation }) {
         }
     }
 
-
     return (
         <View style={styles.loginContainer}>
             <Image
@@ -72,6 +71,8 @@ export default function Login({ navigation }) {
                 <TextInput
                     style={styles.loginTextInput}
                     placeholder="Email"
+                    autoCapitalize='none'
+                    keyboardType='email-address'
                     placeholderTextColor="rgb(116, 144, 147)"
                     onChangeText={(email) => setEmail(email)}
                 />

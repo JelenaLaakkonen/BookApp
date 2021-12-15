@@ -12,9 +12,13 @@ import { signIn, store } from './Components/SigninReducer';
 import bookshelves from './Components/bookshelves'
 import currentlyReading from "./Components/currentlyReading";
 import WantToRead from "./Components/WantToRead";
+import Home from "./Components/Home";
+import BooksByGenre from "./Components/BooksByGenre";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
+
+// headerTitleAlign: 'center',
 
 const AuthStack = () => {
   return (
@@ -42,16 +46,18 @@ const AuthStack = () => {
   );
 };
 
-const MainStackNavigator = () => {
+const SearchStackNavigator = () => {
   return (
     <Stack.Navigator>
       <Stack.Screen
-        name="Search"
+        name="SearchTab"
         component={searchPage}
         options={{
           headerStyle: {
             backgroundColor: 'rgb(116, 144, 147)',
+            elevation: 0,
           },
+          title: 'Search',
           headerRight: () => (
             <AntDesign.Button
               onPress={() => store.dispatch(signIn(false))}
@@ -68,23 +74,25 @@ const MainStackNavigator = () => {
         options={{
           headerStyle: {
             backgroundColor: 'rgb(116, 144, 147)',
-          }
+          },
+          headerTitle: "Details"
         }}
       />
     </Stack.Navigator>
   );
 }
 
-const BookShelfStackNavigator = () => {
+const MainStackNavigator = () => {
   return (
     <Stack.Navigator>
       <Stack.Screen
-        name="Bookshelves"
-        component={bookshelves}
+        name="HomeTab"
+        component={Home}
         options={{
           headerStyle: {
             backgroundColor: 'rgb(116, 144, 147)',
           },
+          title: 'Home',
           headerRight: () => (
             <AntDesign.Button
               onPress={() => store.dispatch(signIn(false))}
@@ -95,9 +103,75 @@ const BookShelfStackNavigator = () => {
             />
           ),
         }} />
-      <Stack.Screen name="Read" component={Bookshelf} />
-      <Stack.Screen name="Currently Reading" component={currentlyReading} />
-      <Stack.Screen name="Want to Read" component={WantToRead} />
+      <Stack.Screen
+        name="Genre Search"
+        component={BooksByGenre}
+        options={{
+          headerStyle: {
+            backgroundColor: 'rgb(116, 144, 147)',
+          }
+        }}
+      />
+      <Stack.Screen
+        name="BookDetailsGenre"
+        component={BookDetails}
+        options={{
+          headerStyle: {
+            backgroundColor: 'rgb(116, 144, 147)',
+          },
+          headerTitle: "Details"
+        }}
+      />
+    </Stack.Navigator>
+  );
+}
+
+
+const BookShelfStackNavigator = () => {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        name="BookshelfTab"
+        component={bookshelves}
+        options={{
+          headerStyle: {
+            backgroundColor: 'rgb(116, 144, 147)',
+          },
+          title: 'Bookshelves',
+          headerRight: () => (
+            <AntDesign.Button
+              onPress={() => store.dispatch(signIn(false))}
+              color="black"
+              backgroundColor="rgb(116, 144, 147)"
+              name="logout"
+              size={28}
+            />
+          ),
+        }} />
+      <Stack.Screen
+        name="Read"
+        component={Bookshelf}
+        options={{
+          headerStyle: {
+            backgroundColor: 'rgb(116, 144, 147)',
+          }
+        }} />
+      <Stack.Screen
+        name="Currently Reading"
+        component={currentlyReading}
+        options={{
+          headerStyle: {
+            backgroundColor: 'rgb(116, 144, 147)',
+          }
+        }} />
+      <Stack.Screen
+        name="Want to Read"
+        component={WantToRead}
+        options={{
+          headerStyle: {
+            backgroundColor: 'rgb(116, 144, 147)',
+          }
+        }} />
     </Stack.Navigator>
   );
 }
@@ -105,11 +179,25 @@ const BookShelfStackNavigator = () => {
 const BottomTabNavigator = () => {
   return (
     <Tab.Navigator
-      screenOptions={{ headerShown: false, tabBarActiveTintColor: 'rgb(116, 144, 147)' }}
+      screenOptions={{
+        headerShown: false,
+        tabBarActiveTintColor: 'rgb(116, 144, 147)',
+        //tabBarActiveBackgroundColor: 'rgb(116, 144, 147)',
+        //tabBarInactiveBackgroundColor: 'rgb(116, 144, 147)',
+      }}
     >
       <Tab.Screen
-        name="SearchTab"
+        name="Home"
         component={MainStackNavigator}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <Entypo name="home" color={color} size={size} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Search"
+        component={SearchStackNavigator}
         options={{
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons name="book-search-outline" color={color} size={size} />
@@ -117,7 +205,7 @@ const BottomTabNavigator = () => {
         }}
       />
       <Tab.Screen
-        name="BookshelfTab"
+        name="Bookshelves"
         component={BookShelfStackNavigator}
         options={{
           tabBarIcon: ({ color, size }) => (

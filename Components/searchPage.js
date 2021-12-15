@@ -1,39 +1,47 @@
 import React, { useState, useEffect } from 'react';
-import { Text, View, TextInput, FlatList, Image, TouchableNativeFeedback, TouchableOpacity, Alert } from 'react-native';
+import { Text, View, FlatList, Image, TouchableNativeFeedback } from 'react-native';
+import { SearchBar } from 'react-native-elements';
 import styles from './Styles';
 
 export default function searchPage({ navigation }) {
 
   const [input, setInput] = useState('');
   const [books, setBooks] = useState([]);
-  const [bookDetails, setBookDetails] = useState({});
   const [resultAmount, setResultAmount] = useState('');
 
-  const getBooks = (input) => {
-    if (input === '') {
-      Alert.alert('Search field cannot be empty');
-    } else {
-      fetch(`https://www.googleapis.com/books/v1/volumes?q=${input}&maxResults=40&key=AIzaSyAC_om6HN224gaJSHas_OVPDpuJEXwQj2U`)
-        .then(response => response.json())
-        .then(data => {
-          setBooks(data.items);
-          const numToString = data.totalItems.toString();
-          setResultAmount(numToString + ' results for "' + input + '"');
-        })
-        .catch((err) => {
-          console.error('Error', err);
-        });
-    }
-  };
+  // Runs everytime 'input' changes with 2s delay (delay makes sure that the 'input' is correct)
+  // If 'input' is not empty all the books are fetched from the API with the 'input' keyword 
+  useEffect(() => {
+    const delay = setTimeout(() => {
+      if (!input) {
+        setBooks('');
+      } else {
+        console.log(input)
+        fetch(`https://www.googleapis.com/books/v1/volumes?q=${input}&maxResults=40&key=AIzaSyAC_om6HN224gaJSHas_OVPDpuJEXwQj2U`)
+          .then(response => response.json())
+          .then(data => {
+            setBooks(data.items);
+            const numToString = data.totalItems.toString();
+            setResultAmount(numToString + ' results for "' + input + '"');
+          })
+          .catch((err) => {
+            console.error('Error', err);
+          });
+      }
+    }, 200)
+    return () => clearTimeout(delay)
+  }, [input]);
 
+  // Flatlist content
   const renderItem = ({ item }) => (
     <View style={styles.bookContainer}>
       <View>
         <TouchableNativeFeedback onPress={() => navigation.navigate('BookDetails', { link: item.selfLink })}>
           <Image
             style={styles.bookImage}
-            source={{ uri: item.volumeInfo.imageLinks.smallThumbnail }}
+            source={item.volumeInfo.imageLinks === undefined ? require('../assets/searchImage.png') : { uri: item.volumeInfo.imageLinks.thumbnail }}
             resizeMode='contain'
+            defaultSource={require('../assets/searchImage.png')}
           />
         </TouchableNativeFeedback>
       </View>
@@ -41,42 +49,54 @@ export default function searchPage({ navigation }) {
         <TouchableNativeFeedback onPress={() => navigation.navigate('BookDetails', { link: item.selfLink })}>
           <Text style={styles.title}>{item.volumeInfo.title}</Text>
         </TouchableNativeFeedback>
-        <Text style={styles.author}>by {item.volumeInfo.authors}</Text>
+        <Text style={styles.author}>by {item.volumeInfo.authors === undefined ? 'unknown' : item.volumeInfo.authors.join(' & ')}</Text>
       </View>
     </View >
   )
 
+  // Flatlist item seperator
   const renderSeparator = () => (
     <View
       style={{
-        backgroundColor: 'lightgrey',
-        height: 0.5,
+        backgroundColor: 'rgb(116, 144, 147)',
+        height: 1,
       }}
     />
   )
 
+  // Rendered if flatlist is empty
   const renderEmptyContainer = () => (
     <View style={styles.container}>
       <Text style={styles.searchTitle}>Search for books</Text>
-      <Image
-        style={{
-          width: 250,
-          height: 200,
-          marginTop: 80
-        }}
-        source={require('../assets/searchImage.png')}
-      />
+      <View style={styles.container}>
+        <Image
+          style={{
+            width: 300,
+            height: 300,
+          }}
+          source={require('../assets/searchImage.png')}
+        />
+      </View>
     </View>
   )
 
+  // Rendered before flatlist
   const renderListHeader = () => (
     <View>
-      <Text>{resultAmount}</Text>
+      <Text style={{ color: 'grey', marginVertical: 10 }}>{books === '' ? '' : resultAmount}</Text>
     </View>
   )
 
   return (
     <View style={styles.container}>
+      <SearchBar
+        placeholder="Type Here..."
+        onChangeText={input => setInput(input)}
+        value={input}
+        inputContainerStyle={styles.textInput}
+        containerStyle={styles.inputView}
+        placeholderTextColor="rgb(116, 144, 147)"
+      />
       <FlatList
         ListHeaderComponent={renderListHeader}
         ItemSeparatorComponent={renderSeparator}
@@ -86,17 +106,6 @@ export default function searchPage({ navigation }) {
         data={books}
         ListEmptyComponent={renderEmptyContainer()}
       />
-      <View style={styles.inputView}>
-        <TextInput
-          style={styles.textInput}
-          value={input}
-          placeholder="Type search word"
-          onChangeText={input => setInput(input)}
-        />
-      </View>
-      <TouchableOpacity style={styles.searchButton} onPress={() => getBooks(input)}>
-        <Text>SEARCH</Text>
-      </TouchableOpacity>
     </View>
   );
 }
