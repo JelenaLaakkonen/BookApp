@@ -184,8 +184,6 @@ const BottomTabNavigator = () => {
       screenOptions={{
         headerShown: false,
         tabBarActiveTintColor: 'rgb(116, 144, 147)',
-        //tabBarActiveBackgroundColor: 'rgb(116, 144, 147)',
-        //tabBarInactiveBackgroundColor: 'rgb(116, 144, 147)',
       }}
     >
       <Tab.Screen
