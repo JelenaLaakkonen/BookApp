@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "bookApp",
-    "slug": "bookApp",
+    "name": "Book owl",
+    "slug": "bookowl",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -22,6 +22,8 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "description": "In this application the user can create account, search, rate and save books into three different bookshelves (want to read, reading, read). All of the user's bookshelves and ratings are personal. The books are fetched from the Google Book Api. The application is build for Android so, some of the fuctionalities may not work on iOS or at least the look might differ from Android.  Also, the app may not be completely responsive.",
+    "githubUrl": "https://github.com/JelenaLaakkonen/BookApp"
   }
 }
