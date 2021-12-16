@@ -2,7 +2,7 @@
 ## Made by Jelena Laakkonen
 Project I made for Haaga-Helia's mobile programming course
 ## About Book Owl
-In this application the user can create account, search, rate and save books into three different bookshelves (want to read, reading, read). All of the user's bookshelves and ratings are personal. The books are fetched from the [Google Book Api](https://developers.google.com/books).
+In this application the user can create account, search, rate and save books into three different bookshelves (want to read, reading, read). All of the user's bookshelves and ratings are personal. The books are fetched from the [Google Book Api](https://developers.google.com/books). The application is build for Android so, some of the fuctionalities may not work on iOS or at least the look might differ from Android.  
 ### Build with
 - [Expo](https://expo.dev/)
 - [React Native](https://reactnative.dev/)
