@@ -19,7 +19,7 @@ export default function Bookshelf() {
   // Get userId from UserStore and set it
   useEffect(() => {
     setUid(userStore.getState());
-  });
+  }, []);
 
   // Get and set books from database
   useEffect(() => {

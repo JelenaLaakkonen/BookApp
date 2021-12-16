@@ -27,7 +27,7 @@ export default function BookDetails({ route }) {
     // Get userId from UserStore and set it
     useEffect(() => {
         setUid(userStore.getState());
-    });
+    }, []);
 
     // Fetch book from API and set data
     useEffect(() => {
@@ -52,7 +52,7 @@ export default function BookDetails({ route }) {
                 bookDetails, rating: ''
             });
         } else {
-            Alert.alert('Book Is Already in the Selected Shelf');
+            Alert.alert('Book Is Already in the One Shelf');
         }
     };
 

@@ -18,7 +18,7 @@ export default function WantToRead() {
   // Get userId from UserStore and set it
   useEffect(() => {
     setUid(userStore.getState());
-  });
+  }, []);
 
   // Get and set books from database
   useEffect(() => {
@@ -47,7 +47,6 @@ export default function WantToRead() {
               snapshot.forEach((childSnap) => {
                 if (childSnap.val().bookDetails.title === bookDetails.title) {
                   const deleteRef = ref(database, uid + '/wantToRead/' + childSnap.key);
-                  console.log(deleteRef);
                   remove(deleteRef);
                 }
               })

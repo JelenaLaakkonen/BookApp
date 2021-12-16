@@ -18,8 +18,7 @@ import BooksByGenre from "./Components/BooksByGenre";
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
-// headerTitleAlign: 'center',
-
+// Stacknav for authentication
 const AuthStack = () => {
   return (
     <Stack.Navigator>
@@ -46,6 +45,7 @@ const AuthStack = () => {
   );
 };
 
+// Stacknav for search and details
 const SearchStackNavigator = () => {
   return (
     <Stack.Navigator>
@@ -82,6 +82,7 @@ const SearchStackNavigator = () => {
   );
 }
 
+// Stacknav for home, genre and details
 const MainStackNavigator = () => {
   return (
     <Stack.Navigator>
@@ -126,7 +127,7 @@ const MainStackNavigator = () => {
   );
 }
 
-
+// Stacknav for bookshelves
 const BookShelfStackNavigator = () => {
   return (
     <Stack.Navigator>
@@ -176,6 +177,7 @@ const BookShelfStackNavigator = () => {
   );
 }
 
+// Tabnav for home, search and bookshelves
 const BottomTabNavigator = () => {
   return (
     <Tab.Navigator
